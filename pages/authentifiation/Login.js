@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const Login = () => {
+const Login = ({navigation}) => {
   return (
     <View>
       <Text>Login</Text>
