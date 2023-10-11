@@ -10,22 +10,88 @@ import T_Etape1 from "../pages/transfert/T_Etape1";
 import T_Etape2 from "../pages/transfert/T_Etape2";
 import T_Etape3 from "../pages/transfert/T_Etape3";
 import Details from "../pages/details/Details";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
+import { Image } from "react-native";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createStackNavigator();
 
-const Navigation = () => {
+const Navigation = ({ navigation }) => {
+  const { navigate } = useContext(AuthContext);
+
+  const [fontsLoaded] = useFonts({
+    "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Presentation" component={Presentation} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Sign" component={Sign} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="T_Numero" component={T_Etape1} />
-        <Stack.Screen name="T_Montant" component={T_Etape2} />
-        <Stack.Screen name="T_Validate" component={T_Etape3} />
-        <Stack.Screen name="Details" component={Details} />
-      </Stack.Navigator>
+      {navigate ? (
+        <Stack.Navigator
+          screenOptions={{
+            headerTitleStyle: { fontFamily: "" },
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: "white",
+              height: 100,
+            },
+            headerRight: () => (
+              <Image
+                source={require("../assets/img_Users/user_default.png")}
+                style={{
+                  width: 40,
+                  height: 40,
+                  marginRight: 18,
+                }}
+              />
+            ),
+          }}
+        >
+          <Stack.Screen name="Accueil" component={Home} options={{}} />
+          <Stack.Screen name="T_Numero" component={T_Etape1} />
+          <Stack.Screen name="T_Montant" component={T_Etape2} />
+          <Stack.Screen name="T_Validate" component={T_Etape3} />
+          <Stack.Screen name="Details" component={Details} />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Presentation"
+            component={Presentation}
+            options={{
+              headerTitle: "",
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{
+              headerTitle: "",
+            }}
+          />
+          <Stack.Screen
+            name="Sign"
+            component={Sign}
+            options={{
+              headerTitle: "",
+            }}
+          />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 };

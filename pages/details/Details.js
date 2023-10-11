@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const Details = () => {
+const Details = ({ route, navigation: { navigate } }) => {
   return (
     <View>
-      <Text>Details</Text>
+      <Text>Details de transaction</Text>
       <Pressable
         style={{
           paddingVertical: 7,
@@ -12,10 +12,10 @@ const Details = () => {
           backgroundColor: "red",
         }}
         onPress={() => {
-          navigation.navigate("Login");
+          navigate("Login");
         }}
       >
-        <Text>Bihar</Text>
+        <Text>{route.params.user.contact}</Text>
       </Pressable>
     </View>
   );
