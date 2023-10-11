@@ -3,5 +3,15 @@ import React, { createContext, useState } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  return <AuthContext.Provider>{children}</AuthContext.Provider>;
+  const [navigate, setNavigate] = useState(false);
+  return (
+    <AuthContext.Provider
+      value={{
+        navigate,
+        setNavigate,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };

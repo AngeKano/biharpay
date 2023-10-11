@@ -10,22 +10,74 @@ import T_Etape1 from "../pages/transfert/T_Etape1";
 import T_Etape2 from "../pages/transfert/T_Etape2";
 import T_Etape3 from "../pages/transfert/T_Etape3";
 import Details from "../pages/details/Details";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
+import { View, Text } from "react-native";
 
 const Stack = createStackNavigator();
 
-const Navigation = () => {
+const Navigation = ({ navigation }) => {
+  const { navigate } = useContext(AuthContext);
+  console.log(navigate);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Presentation" component={Presentation} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Sign" component={Sign} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="T_Numero" component={T_Etape1} />
-        <Stack.Screen name="T_Montant" component={T_Etape2} />
-        <Stack.Screen name="T_Validate" component={T_Etape3} />
-        <Stack.Screen name="Details" component={Details} />
-      </Stack.Navigator>
+      {navigate ? (
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{
+              title: "Accueil",
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: "white",
+                height: 100,
+              },
+              headerRight: () => (
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 50,
+                    backgroundColor: "gray",
+                    marginRight: 18,
+                  }}
+                ></View>
+              ),
+            }}
+          />
+          <Stack.Screen name="T_Numero" component={T_Etape1} />
+          <Stack.Screen name="T_Montant" component={T_Etape2} />
+          <Stack.Screen name="T_Validate" component={T_Etape3} />
+          <Stack.Screen name="Details" component={Details} />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Presentation"
+            component={Presentation}
+            options={{
+              headerTitle: "",
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{
+              headerTitle: "",
+            }}
+          />
+          <Stack.Screen
+            name="Sign"
+            component={Sign}
+            options={{
+              headerTitle: "",
+            }}
+          />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 };
