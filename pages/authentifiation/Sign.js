@@ -5,12 +5,37 @@ import {
   Text,
   View,
 } from "react-native";
-import React from "react";
+import React, { useCallback, useContext } from "react";
 import { TextInput } from "react-native-gesture-handler";
+import { useFonts } from "expo-font";
+import { AuthContext } from "../../context/AuthContext";
+import * as SplashScreen from "expo-splash-screen";
 
 const Sign = ({ navigation: { replace } }) => {
+  const [fontsLoaded] = useFonts({
+    "Zona-regular": require("../../assets/font/ZonaPro-Regular.ttf"),
+    "Zona-bold": require("../../assets/font/ZonaPro-Bold.otf"),
+    "Zona-semibold": require("../../assets/font/ZonaPro-SemiBold.otf"),
+    "Zona-Light": require("../../assets/font/ZonaPro-Light.otf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+  const { setNavigate } = useContext(AuthContext);
+
   return (
-    <KeyboardAvoidingView behavior="height" style={styles.container}>
+    <KeyboardAvoidingView
+      behavior="height"
+      style={styles.container}
+      onLayout={onLayoutRootView}
+    >
       <View
         style={{
           display: "flex",
@@ -20,7 +45,7 @@ const Sign = ({ navigation: { replace } }) => {
           marginHorizontal: 20,
         }}
       >
-        <Text style={{ fontSize: 25, fontWeight: "semibold" }}>
+        <Text style={{ fontSize: 25, fontFamily: "Zona-semibold" }}>
           Enregistrez vous
         </Text>
       </View>
@@ -34,7 +59,9 @@ const Sign = ({ navigation: { replace } }) => {
         }}
       >
         <View style={{ gap: 7 }}>
-          <Text style={{ fontSize: 17 }}>Email</Text>
+          <Text style={{ fontSize: 17, fontFamily: "Zona-regular" }}>
+            Email
+          </Text>
           <TextInput
             style={{
               paddingVertical: 8,
@@ -48,7 +75,9 @@ const Sign = ({ navigation: { replace } }) => {
           />
         </View>
         <View style={{ gap: 7 }}>
-          <Text style={{ fontSize: 17 }}>Mot de passe</Text>
+          <Text style={{ fontSize: 17, fontFamily: "Zona-regular" }}>
+            Mot de passe
+          </Text>
           <TextInput
             style={{
               paddingVertical: 8,
@@ -62,7 +91,9 @@ const Sign = ({ navigation: { replace } }) => {
           />
         </View>
         <View style={{ gap: 7 }}>
-          <Text style={{ fontSize: 17 }}>Confirmer mot de passe</Text>
+          <Text style={{ fontSize: 17, fontFamily: "Zona-regular" }}>
+            Confirmer mot de passe
+          </Text>
           <TextInput
             style={{
               paddingVertical: 8,
@@ -95,11 +126,15 @@ const Sign = ({ navigation: { replace } }) => {
             justifyContent: "center",
           }}
           onPress={() => {
-            replace("Home");
+            setNavigate(true);
           }}
         >
           <Text
-            style={{ fontSize: 18, fontWeight: "semibold", color: "white" }}
+            style={{
+              fontSize: 18,
+              fontFamily: "Zona-semibold",
+              color: "white",
+            }}
           >
             Inscription
           </Text>

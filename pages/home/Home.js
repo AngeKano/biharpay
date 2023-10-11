@@ -7,98 +7,39 @@ import {
   Dimensions,
   Image,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+
 import data from "../../data/data";
 
 const Home = ({ navigation: { navigate } }) => {
   const { User_Contact, Transact } = data;
   const [card, setCard] = useState(false);
-  const data_null = [1];
+  const [fontsLoaded] = useFonts({
+    "Zona-regular": require("../../assets/font/ZonaPro-Regular.ttf"),
+    "Zona-bold": require("../../assets/font/ZonaPro-Bold.otf"),
+    "Zona-semibold": require("../../assets/font/ZonaPro-SemiBold.otf"),
+    "Zona-Light": require("../../assets/font/ZonaPro-Light.otf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <FlatList
-      data={data_null}
+      data={[1]}
       renderItem={({ item }) => (
-        <View style={styles.container}>
+        <View style={styles.container} onLayout={onLayoutRootView}>
           {card ? (
-            <Pressable
-              onPress={() => {
-                setCard(!card);
-              }}
-              style={{
-                width: "90%",
-                alignSelf: "center",
-                height: 180,
-                backgroundColor: "black",
-                borderRadius: 15,
-                position: "relative",
-                paddingHorizontal: 21,
-                paddingVertical: 24,
-              }}
-            >
-              <View style={{ alignItems: "flex-end" }}>
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "semibold",
-                    fontSize: 18,
-                  }}
-                >
-                  BiharPay
-                </Text>
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <Text
-                  style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
-                >
-                  75.000{" "}
-                  <Text style={{ color: "gray", fontSize: 17 }}>FCFA</Text>
-                </Text>
-              </View>
-              <View>
-                <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
-                >
-                  Amani Yohan Ange 🙈
-                </Text>
-              </View>
-              <View
-                style={{
-                  alignItems: "flex-end",
-                  position: "absolute",
-                  bottom: 0,
-                  right: 0,
-                }}
-              >
-                <View
-                  style={{
-                    width: 23,
-                    height: 43,
-                    backgroundColor: "#25C595",
-                    borderTopStartRadius: 23,
-                    borderBottomStartRadius: 23,
-                  }}
-                ></View>
-                <View
-                  style={{
-                    width: 63,
-                    height: 57,
-                    backgroundColor: "#04FFB4",
-                    borderTopStartRadius: 20,
-                    borderBottomEndRadius: 15,
-                  }}
-                ></View>
-              </View>
-            </Pressable>
-          ) : (
             <Pressable
               onPress={() => {
                 setCard(!card);
@@ -140,7 +81,7 @@ const Home = ({ navigation: { navigate } }) => {
                 }}
               >
                 <AntDesign name="qrcode" size={18} color="gray" />
-                <Text style={{ color: "gray", fontWeight: "semibold" }}>
+                <Text style={{ color: "gray", fontFamily: "Zona-semibold" }}>
                   Scanner
                 </Text>
               </View>
@@ -200,6 +141,91 @@ const Home = ({ navigation: { navigate } }) => {
                 ></View>
               </View>
             </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setCard(!card);
+              }}
+              style={{
+                width: "90%",
+                alignSelf: "center",
+                height: 180,
+                backgroundColor: "black",
+                borderRadius: 15,
+                position: "relative",
+                paddingHorizontal: 21,
+                paddingVertical: 24,
+              }}
+            >
+              <View style={{ alignItems: "flex-end" }}>
+                <Text
+                  style={{
+                    color: "white",
+                    fontFamily: "Zona-semibold",
+                    fontSize: 18,
+                  }}
+                >
+                  BiharPay
+                </Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 20,
+                    fontFamily: "Zona-bold",
+                  }}
+                >
+                  75.000{" "}
+                  <Text style={{ color: "gray", fontSize: 17 }}>FCFA</Text>
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    fontSize: 17,
+                    fontFamily: "Zona-bold",
+                    color: "white",
+                  }}
+                >
+                  Amani Yohan Ange 🙈
+                </Text>
+              </View>
+              <View
+                style={{
+                  alignItems: "flex-end",
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                }}
+              >
+                <View
+                  style={{
+                    width: 23,
+                    height: 43,
+                    backgroundColor: "#25C595",
+                    borderTopStartRadius: 23,
+                    borderBottomStartRadius: 23,
+                  }}
+                ></View>
+                <View
+                  style={{
+                    width: 63,
+                    height: 57,
+                    backgroundColor: "#04FFB4",
+                    borderTopStartRadius: 20,
+                    borderBottomEndRadius: 15,
+                  }}
+                ></View>
+              </View>
+            </Pressable>
           )}
           <View
             style={{
@@ -234,7 +260,7 @@ const Home = ({ navigation: { navigate } }) => {
                   style={{ width: 32, height: 34.5 }}
                 />
               </View>
-              <Text style={{ fontSize: 18, fontWeight: "semibold" }}>
+              <Text style={{ fontSize: 16, fontFamily: "Zona-semibold" }}>
                 Dépot
               </Text>
             </View>
@@ -261,7 +287,7 @@ const Home = ({ navigation: { navigate } }) => {
                   style={{ width: 32, height: 34.5 }}
                 />
               </View>
-              <Text style={{ fontSize: 18, fontWeight: "semibold" }}>
+              <Text style={{ fontSize: 16, fontFamily: "Zona-semibold" }}>
                 Retrait
               </Text>
             </View>
@@ -288,14 +314,14 @@ const Home = ({ navigation: { navigate } }) => {
                   style={{ width: 52, height: 42 }}
                 />
               </View>
-              <Text style={{ fontSize: 18, fontWeight: "semibold" }}>
+              <Text style={{ fontSize: 16, fontFamily: "Zona-semibold" }}>
                 Transfert
               </Text>
             </View>
           </View>
 
           <View style={{ marginBottom: 30 }}>
-            <Text style={{ fontSize: 19, fontWeight: "semibold" }}>
+            <Text style={{ fontSize: 19, fontFamily: "Zona-semibold" }}>
               Contact récents
             </Text>
             <View style={{ marginTop: 20 }}>
@@ -312,15 +338,16 @@ const Home = ({ navigation: { navigate } }) => {
                       gap: 8,
                     }}
                   >
-                    <View
+                    <Image
+                      source={item.image}
                       style={{
                         width: 50,
                         height: 50,
-                        borderRadius: 40,
-                        backgroundColor: "gray",
                       }}
-                    ></View>
-                    <Text>{item.name}</Text>
+                    />
+                    <Text style={{ fontFamily: "Zona-regular" }}>
+                      {item.name}
+                    </Text>
                   </View>
                 )}
               />
@@ -335,12 +362,12 @@ const Home = ({ navigation: { navigate } }) => {
                 flexDirection: "row",
               }}
             >
-              <Text style={{ fontSize: 19, fontWeight: "semibold" }}>
+              <Text style={{ fontSize: 19, fontFamily: "Zona-semibold" }}>
                 Historique de transaction
               </Text>
               <Entypo name="chevron-down" size={24} color="black" />
             </View>
-            <View style={{ marginTop: 20 }}>
+            <View style={{ marginTop: 20, marginBottom: 20 }}>
               <FlatList
                 data={Transact}
                 ItemSeparatorComponent={() => <View style={{ height: 18 }} />}
@@ -364,22 +391,44 @@ const Home = ({ navigation: { navigate } }) => {
                         justifyContent: "center",
                       }}
                     >
-                      <View
-                        style={{
-                          width: 50,
-                          height: 50,
-                          borderRadius: 40,
-                          backgroundColor: "gray",
-                        }}
-                      ></View>
+                      <Image
+                        source={item.image}
+                        style={{ width: 50, height: 50 }}
+                      />
                       <View style={{ gap: 5 }}>
-                        <Text>{item.contact}</Text>
-                        <Text>{item.date}</Text>
+                        <Text style={{ fontFamily: "Zona-semibold" }}>
+                          {item.contact}
+                        </Text>
+                        <Text
+                          style={{ fontFamily: "Zona-regular", color: "gray" }}
+                        >
+                          {item.date}
+                        </Text>
                       </View>
                     </View>
 
                     <View>
-                      <Text>{item.montant + " " + item.devise}</Text>
+                      {parseInt(item.montant) > 0 ? (
+                        <Text
+                          style={{
+                            color: "#25C595",
+                            fontFamily: "Zona-bold",
+                            fontSize: 17,
+                          }}
+                        >
+                          {item.montant + " " + item.devise}
+                        </Text>
+                      ) : (
+                        <Text
+                          style={{
+                            color: "#FF2121",
+                            fontFamily: "Zona-bold",
+                            fontSize: 17,
+                          }}
+                        >
+                          {item.montant + " " + item.devise}
+                        </Text>
+                      )}
                     </View>
                   </Pressable>
                 )}
@@ -401,22 +450,3 @@ const styles = StyleSheet.create({
   },
 });
 
-{
-  /* <Text>DFGHJK</Text>
-
-<Carousel
-  layout="stack"
-  layoutCardOffset={9}
-  ref={isCarousel}
-  data={data}
-  renderItem={({ item }) => (
-    <View
-      style={{ width: 200, height: 100, backgroundColor: "black" }}
-    ></View>
-  )}
-  sliderWidth={400}
-  itemWidth={200}
-  inactiveSlideShift={0}
-  useScrollView={true}
-/> */
-}

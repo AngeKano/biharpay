@@ -1,9 +1,30 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const Presentation = ({ navigation }) => {
+  const [fontsLoaded] = useFonts({
+    "Zona-regular": require("../../assets/font/ZonaPro-Regular.ttf"),
+    "Zona-bold": require("../../assets/font/ZonaPro-Bold.otf"),
+    "Zona-semibold": require("../../assets/font/ZonaPro-SemiBold.otf"),
+    "Zona-Light": require("../../assets/font/ZonaPro-Light.otf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayoutRootView}>
       <View
         style={{
           flex: 1,
@@ -11,8 +32,24 @@ const Presentation = ({ navigation }) => {
           justifyContent: "center",
         }}
       >
-        <Text style={{ fontSize: 25, fontWeight: "semibold" }}>Bienvenue</Text>
-        <Text style={{ fontSize: 25, fontWeight: "semibold" }}>BiharPay</Text>
+        <Text
+          style={{
+            fontSize: 25,
+            fontFamily: "Zona-semibold",
+            textAlign: "center",
+          }}
+        >
+          Bienvenue
+        </Text>
+        <Text
+          style={{
+            fontSize: 25,
+            fontFamily: "Zona-semibold",
+            textAlign: "center",
+          }}
+        >
+          BiharPay
+        </Text>
       </View>
       <View
         style={{
@@ -38,7 +75,11 @@ const Presentation = ({ navigation }) => {
           }}
         >
           <Text
-            style={{ fontSize: 18, fontWeight: "semibold", color: "white" }}
+            style={{
+              fontSize: 18,
+              fontFamily: "Zona-semibold",
+              color: "white",
+            }}
           >
             Connexion
           </Text>
@@ -58,36 +99,17 @@ const Presentation = ({ navigation }) => {
           }}
         >
           <Text
-            style={{ fontSize: 18, fontWeight: "semibold", color: "white" }}
+            style={{
+              fontSize: 18,
+              fontFamily: "Zona-semibold",
+
+              color: "white",
+            }}
           >
             Inscription
           </Text>
         </Pressable>
       </View>
-
-      {/* <View>
-        <View>
-        <View
-          style={{
-            width: 63,
-            height: 57,
-            backgroundColor: "#04FFB4",
-            borderTopStartRadius: 20,
-            borderBottomEndRadius: 20,
-          }}
-        ></View>
-        <View
-          style={{
-            width: 23,
-            height: 43,
-            backgroundColor: "#04FFB4",
-            borderTopStartRadius: 23,
-            borderBottomStartRadius: 23,
-          }}
-        ></View>
-        </View>
-       
-      </View> */}
     </View>
   );
 };

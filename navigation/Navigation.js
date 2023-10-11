@@ -12,41 +12,55 @@ import T_Etape3 from "../pages/transfert/T_Etape3";
 import Details from "../pages/details/Details";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
-import { View, Text } from "react-native";
+import { Image } from "react-native";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createStackNavigator();
 
 const Navigation = ({ navigation }) => {
   const { navigate } = useContext(AuthContext);
-  console.log(navigate);
+
+  const [fontsLoaded] = useFonts({
+    "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <NavigationContainer>
       {navigate ? (
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{
-              title: "Accueil",
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: "white",
-                height: 100,
-              },
-              headerRight: () => (
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 50,
-                    backgroundColor: "gray",
-                    marginRight: 18,
-                  }}
-                ></View>
-              ),
-            }}
-          />
+        <Stack.Navigator
+          screenOptions={{
+            headerTitleStyle: { fontFamily: "" },
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: "white",
+              height: 100,
+            },
+            headerRight: () => (
+              <Image
+                source={require("../assets/img_Users/user_default.png")}
+                style={{
+                  width: 40,
+                  height: 40,
+                  marginRight: 18,
+                }}
+              />
+            ),
+          }}
+        >
+          <Stack.Screen name="Accueil" component={Home} options={{}} />
           <Stack.Screen name="T_Numero" component={T_Etape1} />
           <Stack.Screen name="T_Montant" component={T_Etape2} />
           <Stack.Screen name="T_Validate" component={T_Etape3} />

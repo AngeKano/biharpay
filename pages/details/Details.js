@@ -4,7 +4,7 @@ import React from "react";
 const Details = ({ route, navigation: { navigate } }) => {
   return (
     <View>
-      <Text>Details</Text>
+      <Text>Details de transaction</Text>
       <Pressable
         style={{
           paddingVertical: 7,
@@ -12,7 +12,7 @@ const Details = ({ route, navigation: { navigate } }) => {
           backgroundColor: "red",
         }}
         onPress={() => {
-          navigation.navigate("Login");
+          navigate("Login");
         }}
       >
         <Text>{route.params.user.contact}</Text>
