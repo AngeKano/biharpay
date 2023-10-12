@@ -51,6 +51,7 @@ const Transact = [
     image: require("../assets/img_Users/broo.png"),
   },
 ];
+
 export default {
   User_Contact,
   Transact,

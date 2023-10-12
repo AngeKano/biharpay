@@ -23,19 +23,19 @@ const Stack = createStackNavigator();
 const Navigation = ({ navigation }) => {
   const { navigate } = useContext(AuthContext);
 
-  const [fontsLoaded] = useFonts({
-    "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
-  });
+  // const [fontsLoaded] = useFonts({
+  //   "Inter-Black": require("../assets/fonts/Inter-Black.otf"),
+  // });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (fontsLoaded) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
 
   return (
     <NavigationContainer>

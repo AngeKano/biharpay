@@ -7,17 +7,23 @@ import {
   Dimensions,
   Image,
 } from "react-native";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback,useContext, useEffect, useRef, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 import data from "../../data/data";
+import { AuthContext } from "../../context/AuthContext";
+import axios from "react-native-axios"
 
 const Home = ({ navigation: { navigate } }) => {
   const { User_Contact, Transact } = data;
   const [card, setCard] = useState(false);
+  const [transaction,setTransaction]= useState([''])
+  const [name,setName]=useState('')
+  const [solde,setSolde]=useState('')
+
   const [fontsLoaded] = useFonts({
     "Zona-regular": require("../../assets/font/ZonaPro-Regular.ttf"),
     "Zona-bold": require("../../assets/font/ZonaPro-Bold.otf"),
@@ -25,20 +31,58 @@ const Home = ({ navigation: { navigate } }) => {
     "Zona-Light": require("../../assets/font/ZonaPro-Light.otf"),
   });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (fontsLoaded) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
+  const { numeroPhones , idUser } = useContext(AuthContext)
+
+  useEffect(()=>{
+     axios.get(`http://192.168.1.102:8083/transactions/getAllTransactions?numeroPhone=${numeroPhones}`)
+    .then(function (response) {
+      console.log(response.data);
+      const adaptedTransactions = response.data.map((serverTransaction) => {
+        const contact = serverTransaction.user.names; // Ou toute autre propriété que vous voulez utiliser
+        const date =serverTransaction.transactionType; // Obtenez la date depuis serverTransaction si elle est disponible
+        const montant = serverTransaction.amount;
+        const devise = "FCFA"; // Ou obtenez-la depuis serverTransaction si elle est disponible
+        const image = ""; // Obtenez l'image depuis serverTransaction si elle est disponible
+
+        return { contact, date, montant, devise, image };
+      });
+      setTransaction(adaptedTransactions)
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+
+    axios.get(`http://192.168.1.102:8083/users/${idUser}`)
+    .then(function (response) {
+      console.log(response.data);
+      setSolde(response.data.solde)
+      setName(response.data.names)
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  },[transaction])
+  console.log(transaction);
   return (
     <FlatList
       data={[1]}
       renderItem={({ item }) => (
-        <View style={styles.container} onLayout={onLayoutRootView}>
+        <View style={styles.container} 
+        // onLayout={onLayoutRootView}
+        >
           {card ? (
             <Pressable
               onPress={() => {
@@ -183,7 +227,7 @@ const Home = ({ navigation: { navigate } }) => {
                     fontFamily: "Zona-bold",
                   }}
                 >
-                  75.000{" "}
+                  {solde}{" "}
                   <Text style={{ color: "gray", fontSize: 17 }}>FCFA</Text>
                 </Text>
               </View>
@@ -195,7 +239,7 @@ const Home = ({ navigation: { navigate } }) => {
                     color: "white",
                   }}
                 >
-                  Amani Yohan Ange 🙈
+                  {name} 🙈
                 </Text>
               </View>
               <View
@@ -312,9 +356,11 @@ const Home = ({ navigation: { navigate } }) => {
                 <Image
                   source={require("../../assets/icons/transaction.png")}
                   style={{ width: 52, height: 42 }}
-                />
+                 />
               </View>
-              <Text style={{ fontSize: 16, fontFamily: "Zona-semibold" }}>
+              <Text style={{ fontSize: 16, fontFamily: "Zona-semibold" }}
+              onPress={()=> navigate("T_Numero", { user: item })}
+              >
                 Transfert
               </Text>
             </View>
@@ -368,71 +414,72 @@ const Home = ({ navigation: { navigate } }) => {
               <Entypo name="chevron-down" size={24} color="black" />
             </View>
             <View style={{ marginTop: 20, marginBottom: 20 }}>
-              <FlatList
-                data={Transact}
-                ItemSeparatorComponent={() => <View style={{ height: 18 }} />}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginHorizontal: 9,
-                    }}
-                    onPress={() => {
-                      navigate("Details", { user: item });
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        gap: 7,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Image
-                        source={item.image}
-                        style={{ width: 50, height: 50 }}
-                      />
-                      <View style={{ gap: 5 }}>
-                        <Text style={{ fontFamily: "Zona-semibold" }}>
-                          {item.contact}
-                        </Text>
-                        <Text
-                          style={{ fontFamily: "Zona-regular", color: "gray" }}
-                        >
-                          {item.date}
-                        </Text>
-                      </View>
-                    </View>
+            <FlatList
+data={transaction.sort((a, b) => b.date.localeCompare(a.date))}
+  ItemSeparatorComponent={() => <View style={{ height: 18 }} />}
+  renderItem={({ item }) => (
+    <Pressable
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginHorizontal: 9,
+      }}
+      onPress={() => {
+        navigate("Details", { user: item });
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 7,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Image
+          source={item.image}
+          style={{ width: 50, height: 50 }}
+        />
+        <View style={{ gap: 5 }}>
+          <Text style={{ fontFamily: "Zona-semibold" }}>
+            {item.contact}
+          </Text>
+          <Text
+            style={{ fontFamily: "Zona-regular", color: "gray" }}
+          >
+            {item.date}
+          </Text>
+        </View>
+      </View>
 
-                    <View>
-                      {parseInt(item.montant) > 0 ? (
-                        <Text
-                          style={{
-                            color: "#25C595",
-                            fontFamily: "Zona-bold",
-                            fontSize: 17,
-                          }}
-                        >
-                          {item.montant + " " + item.devise}
-                        </Text>
-                      ) : (
-                        <Text
-                          style={{
-                            color: "#FF2121",
-                            fontFamily: "Zona-bold",
-                            fontSize: 17,
-                          }}
-                        >
-                          {item.montant + " " + item.devise}
-                        </Text>
-                      )}
-                    </View>
-                  </Pressable>
-                )}
-              />
+      <View>
+        {-item.date === "TRANSFER" || item.date === "WITHDRAW" ? (
+          <Text
+            style={{
+              color: "#FF2121",
+              fontFamily: "Zona-bold",
+              fontSize: 17,
+            }}
+          >
+            {item.montant + " " + item.devise}
+          </Text>
+        ) : (
+          <Text
+            style={{
+              color: "#25C595", // Couleur pour les autres transactions
+              fontFamily: "Zona-bold",
+              fontSize: 17,
+            }}
+          >
+            {+ item.montant + " " + item.devise}
+          </Text>
+        )}
+      </View>
+    </Pressable>
+  )}
+/>
+
             </View>
           </View>
         </View>

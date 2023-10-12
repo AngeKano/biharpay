@@ -5,11 +5,13 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { useFonts } from "expo-font";
 import { AuthContext } from "../../context/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
+import axios from "react-native-axios"
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 const Sign = ({ navigation: { replace } }) => {
   const [fontsLoaded] = useFonts({
@@ -18,7 +20,9 @@ const Sign = ({ navigation: { replace } }) => {
     "Zona-semibold": require("../../assets/font/ZonaPro-SemiBold.otf"),
     "Zona-Light": require("../../assets/font/ZonaPro-Light.otf"),
   });
-
+  const [numeroPhone,setNumeroPhone]=useState('')
+  const [name,setName]=useState('')
+  const [password,setPassword]=useState('')
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -28,8 +32,32 @@ const Sign = ({ navigation: { replace } }) => {
   if (!fontsLoaded) {
     return null;
   }
-  const { setNavigate } = useContext(AuthContext);
+  const handleSignin=()=>{
+    axios.post('http://192.168.1.102:8083/users/register', {
+      names:name,
+      numeroPhone: numeroPhone,
+      password:password
+    })
+    .then(function (response) {
+      console.log(response.data);
+      setNumeroPhones(numeroPhone)
+      setIdUser(response.data.id)
+      setNavigate(true);
 
+    })
+    .catch(function (error) {
+      console.log(error);
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Error',
+        textBody: 'aucune donnée entré',
+        button: 'close',
+      })
+    });
+  }
+ 
+
+  const { setNavigate , setNumeroPhones , setIdUser } = useContext(AuthContext);
   return (
     <KeyboardAvoidingView
       behavior="height"
@@ -60,7 +88,7 @@ const Sign = ({ navigation: { replace } }) => {
       >
         <View style={{ gap: 7 }}>
           <Text style={{ fontSize: 17, fontFamily: "Zona-regular" }}>
-            Email
+            Nom
           </Text>
           <TextInput
             style={{
@@ -71,7 +99,24 @@ const Sign = ({ navigation: { replace } }) => {
               borderWidth: 1,
               borderRadius: 9,
             }}
-            keyboardType="email-address"
+            onChangeText={(text)=>setName(text)}
+
+          />
+        </View>
+        <View style={{ gap: 7 }}>
+          <Text style={{ fontSize: 17, fontFamily: "Zona-regular" }}>
+            Numero Téléphone
+          </Text>
+          <TextInput
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 10,
+              borderColor: "rgba(4, 255, 179.70, 0.29)",
+
+              borderWidth: 1,
+              borderRadius: 9,
+            }}
+            onChangeText={(text)=>setNumeroPhone(text)}
           />
         </View>
         <View style={{ gap: 7 }}>
@@ -88,6 +133,8 @@ const Sign = ({ navigation: { replace } }) => {
               borderRadius: 9,
             }}
             secureTextEntry={true}
+            onChangeText={(text)=>setPassword(text)}
+
           />
         </View>
         <View style={{ gap: 7 }}>
@@ -107,6 +154,9 @@ const Sign = ({ navigation: { replace } }) => {
           />
         </View>
       </View>
+      <AlertNotificationRoot>
+
+</AlertNotificationRoot>
       <View
         style={{
           display: "flex",
@@ -126,7 +176,7 @@ const Sign = ({ navigation: { replace } }) => {
             justifyContent: "center",
           }}
           onPress={() => {
-            setNavigate(true);
+            handleSignin()
           }}
         >
           <Text
@@ -135,6 +185,7 @@ const Sign = ({ navigation: { replace } }) => {
               fontFamily: "Zona-semibold",
               color: "white",
             }}
+           
           >
             Inscription
           </Text>

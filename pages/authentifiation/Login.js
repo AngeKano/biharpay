@@ -1,9 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import React, { useCallback, useContext } from "react";
+import React, { useState,useCallback, useContext } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { useFonts } from "expo-font";
 import { AuthContext } from "../../context/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
+import axios from "react-native-axios"
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,7 +16,8 @@ const Login = ({ navigation: { replace } }) => {
     "Zona-semibold": require("../../assets/font/ZonaPro-SemiBold.otf"),
     "Zona-Light": require("../../assets/font/ZonaPro-Light.otf"),
   });
-
+  const [numeroPhone,setNumeroPhone]=useState('')
+  const [password,setPassword]=useState('')
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -24,9 +27,33 @@ const Login = ({ navigation: { replace } }) => {
   if (!fontsLoaded) {
     return null;
   }
-  const { setNavigate } = useContext(AuthContext);
+  const handleLogin=()=>{
+    axios.post('http://192.168.1.102:8083/users/login', {
+      numeroPhone: numeroPhone,
+      password:password
+    })
+    .then(function (response) {
+      console.log(response.data);
+      setNumeroPhones(numeroPhone)
+      setIdUser(response.data.id)
+      setNavigate(true);
+
+    })
+    .catch(function (error) {
+      console.log(error);
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Error',
+        textBody: 'numero de téléphone ou mots de passe incorrect',
+        button: 'close',
+      })
+    });
+  }
+
+  const { setNavigate , setNumeroPhones, setIdUser } = useContext(AuthContext);
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
+     
       <View
         style={{
           display: "flex",
@@ -51,7 +78,7 @@ const Login = ({ navigation: { replace } }) => {
       >
         <View style={{ gap: 7 }}>
           <Text style={{ fontSize: 17, fontFamily: "Zona-regular" }}>
-            Email
+            Numero Téléphone
           </Text>
           <TextInput
             style={{
@@ -62,9 +89,11 @@ const Login = ({ navigation: { replace } }) => {
               borderWidth: 1,
               borderRadius: 9,
             }}
-            keyboardType="email-address"
+            onChangeText={(text)=>setNumeroPhone(text)}
+
           />
         </View>
+        
         <View style={{ gap: 7 }}>
           <Text style={{ fontSize: 17, fontFamily: "Zona-regular" }}>
             Mot de passe
@@ -78,10 +107,14 @@ const Login = ({ navigation: { replace } }) => {
               borderWidth: 1,
               borderRadius: 9,
             }}
-            keyboardType="email-address"
+            onChangeText={(text)=>setPassword(text)}
+            
           />
         </View>
       </View>
+      <AlertNotificationRoot>
+
+</AlertNotificationRoot>
       <View
         style={{
           display: "flex",
@@ -101,7 +134,7 @@ const Login = ({ navigation: { replace } }) => {
             justifyContent: "center",
           }}
           onPress={() => {
-            setNavigate(true);
+            handleLogin()
           }}
         >
           <Text
